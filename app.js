@@ -1,19 +1,19 @@
-// Ambiente: rodando DENTRO do SIGO
-// Autenticação: já feita pelo SIGO (cookie/sessão). Nada de token no front-end.
-// Requisições: mesma origem (same-origin), enviando credenciais (cookies) automaticamente.
+// Ambiente: desenvolvimento local (usa mock-data.json)
+// No SIGO: troque DATA_URL para '/api/documentos' e (opcional) adicione credentials:'include'
 
-// Configuração
-const DATA_URL = 'mock-data.json'; // endpoint do SIGO (mesma origem)
+// ================== Config ==================
+const DATA_URL = '/api/documentos';
 const FAVORITES_KEY = 'biza_docs_favorites';
+const EXPIRY_WINDOW_DAYS = 25; // até 25 dias será "A vencer"
 
-// Helpers DOM
+// ================== DOM ==================
 const $ = (id) => document.getElementById(id);
 const grid = $('grid');
 const selArea = $('filterArea');
 const selTipo = $('filterTipo');
 const search = $('search');
 const onlyValid = $('onlyValid');
-const onlyAtual = $('onlyAtual');
+const onlyExpired = $('onlyExpired'); // check "Mostrar apenas vencidos"
 const total = $('total');
 const btnFavoritos = $('btnFavoritos');
 const viewer = $('viewer');
@@ -27,40 +27,92 @@ let showOnlyFavs = false;
 const getFavs = () => new Set(JSON.parse(localStorage.getItem(FAVORITES_KEY) || '[]'));
 const saveFavs = (set) => localStorage.setItem(FAVORITES_KEY, JSON.stringify(Array.from(set)));
 
-function statusClass(s) {
-  const k = (s || '').toLowerCase();
+// ================== Datas ==================
+function toDate(value) {
+  if (!value) return null;
+  if (value instanceof Date) return value;
+  const s = String(value).trim();
+
+  const iso = /^(\d{4})-(\d{2})-(\d{2})$/;      // 2025-11-03
+  const br  = /^(\d{2})\/(\d{2})\/(\d{4})$/;    // 03/11/2025
+
+  let y, m, d;
+  if (iso.test(s)) {
+    const m1 = s.match(iso);
+    y = +m1[1]; m = +m1[2] - 1; d = +m1[3];
+  } else if (br.test(s)) {
+    const m2 = s.match(br);
+    d = +m2[1]; m = +m2[2] - 1; y = +m2[3];
+  } else {
+    const n = new Date(s);
+    if (!isNaN(n)) return n;
+    return null;
+  }
+  const dt = new Date(y, m, d, 23, 59, 59); // fim do dia
+  return isNaN(dt) ? null : dt;
+}
+
+function daysBetween(a, b) {
+  const MS = 24 * 60 * 60 * 1000;
+  return Math.floor((a - b) / MS);
+}
+
+// ================== Status ==================
+function computeStatusLabel(doc) {
+  // 1) Se houver validade, decide por data
+  const dt = toDate(doc.validade);
+  if (dt) {
+    const hoje = new Date();
+    if (dt < hoje) return 'Vencido';
+    const dias = daysBetween(dt, hoje); // dias até a validade
+    if (dias <= EXPIRY_WINDOW_DAYS) return 'A vencer';
+    return 'Válido';
+  }
+
+  // 2) Sem data → tenta status textual
+  const s = (doc.status || '').toLowerCase();
+  if (s.includes('vencid') || s.includes('expir') || s.includes('obsole')) return 'Vencido';
+  if (s.includes('válid')) return 'Válido';
+  if (s.includes('rascun')) return 'Rascunho';
+  return doc.status || '—';
+}
+
+function statusCssClass(label) {
+  const k = (label || '').toLowerCase();
+  if (k.includes('vencid')) return 'vencido';
+  if (k.includes('a vencer')) return 'avencer';
   if (k.includes('válid')) return 'valido';
   if (k.includes('rascun')) return 'rascunho';
-  if (k.includes('obso')) return 'obsoleto';
+  if (k.includes('obsole')) return 'obsoleto';
   return '';
 }
 
+function isExpired(doc) {
+  const label = computeStatusLabel(doc);
+  return /vencid/i.test(label);
+}
+
+// ================== Helpers UI ==================
 function humanExt(ext) {
   if (!ext) return '—';
-  const map = {
-    pdf: 'PDF',
-    doc: 'Word',
-    docx: 'Word',
-    xls: 'Excel',
-    xlsx: 'Excel',
-    ppt: 'PowerPoint',
-    pptx: 'PowerPoint',
-  };
+  const map = { pdf:'PDF', doc:'Word', docx:'Word', xls:'Excel', xlsx:'Excel', ppt:'PowerPoint', pptx:'PowerPoint' };
   return map[ext.toLowerCase()] || ext.toUpperCase();
 }
 
 function buildFilters(data) {
-  const areas = Array.from(new Set(data.map((d) => d.area))).sort();
-  const tipos = Array.from(new Set(data.map((d) => d.tipo))).sort();
-  selArea.innerHTML = '<option value="">Todas as áreas</option>' + areas.map((a) => `<option>${a}</option>`).join('');
-  selTipo.innerHTML = '<option value="">Todos os tipos</option>' + tipos.map((t) => `<option>${t}</option>`).join('');
+  const areas = Array.from(new Set(data.map(d => d.area))).sort();
+  const tipos = Array.from(new Set(data.map(d => d.tipo))).sort();
+  selArea.innerHTML = '<option value="">Todas as áreas</option>' + areas.map(a => `<option>${a}</option>`).join('');
+  selTipo.innerHTML = '<option value="">Todos os tipos</option>' + tipos.map(t => `<option>${t}</option>`).join('');
 }
 
 function cardHTML(d, isFav) {
-  const stClass = statusClass(d.status);
+  const label = computeStatusLabel(d);
+  const stClass = statusCssClass(label);
   const favIcon = isFav ? '★' : '☆';
   const ext = humanExt(d.extensao);
   const openURL = encodeURIComponent(d.urlViewer || d.url || '#');
+
   return `
     <article class="card" data-open="${openURL}" data-title="${encodeURIComponent(d.nome)}" data-ext="${(d.extensao || '').toLowerCase()}" tabindex="0">
       <h3 title="${d.nome}">${d.nome}</h3>
@@ -72,8 +124,9 @@ function cardHTML(d, isFav) {
       </div>
       <div class="row" style="font-size:14px; color:var(--muted)">
         <span><b>Código:</b> ${d.codigo || '—'}</span>
+        ${d.validade ? `<span style="margin-left:12px;"><b>Validade:</b> ${d.validade}</span>` : ''}
         <span class="spacer"></span>
-        <span class="status ${stClass}">${d.status || '—'}</span>
+        <span class="status ${stClass}">${label}</span>
       </div>
       <div class="row actions">
         <button class="btn-ghost" data-fav="${d.id}" aria-label="Favoritar">${favIcon} Favoritar</button>
@@ -87,9 +140,10 @@ function render() {
   const fArea = selArea.value || '';
   const fTipo = selTipo.value || '';
 
-  let list = ALL.filter((d) => {
+  let list = ALL.filter(d => {
     if (showOnlyFavs && !favs.has(d.id)) return false;
-    if (onlyValid.checked && d.status !== 'Válido') return false;
+    if (onlyValid.checked && computeStatusLabel(d) !== 'Válido') return false;
+    if (onlyExpired.checked && !isExpired(d)) return false;
     if (fArea && d.area !== fArea) return false;
     if (fTipo && d.tipo !== fTipo) return false;
     if (q) {
@@ -99,20 +153,10 @@ function render() {
     return true;
   });
 
-  if (onlyAtual.checked) {
-    const newest = new Map();
-    for (const d of list) {
-      const key = d.codigo || d.nome;
-      const v = parseInt(d.versao || '0', 10);
-      if (!newest.has(key) || v > newest.get(key).v) newest.set(key, { v, d });
-    }
-    list = Array.from(newest.values()).map((x) => x.d);
-  }
-
   total.textContent = `Total: ${list.length}`;
-  grid.innerHTML = list.map((d) => cardHTML(d, favs.has(d.id))).join('');
+  grid.innerHTML = list.map(d => cardHTML(d, favs.has(d.id))).join('');
 
-  grid.querySelectorAll('[data-fav]').forEach((el) => {
+  grid.querySelectorAll('[data-fav]').forEach(el => {
     el.addEventListener('click', (e) => {
       e.stopPropagation();
       const id = el.getAttribute('data-fav');
@@ -123,7 +167,7 @@ function render() {
     });
   });
 
-  grid.querySelectorAll('[data-open]').forEach((card) => {
+  grid.querySelectorAll('[data-open]').forEach(card => {
     card.addEventListener('click', () => {
       const url = decodeURIComponent(card.getAttribute('data-open'));
       const title = decodeURIComponent(card.getAttribute('data-title'));
@@ -151,19 +195,20 @@ closeViewer.addEventListener('click', () => {
   viewerFrame.src = '';
 });
 
-[search, selArea, selTipo, onlyValid, onlyAtual].forEach((el) => el.addEventListener('input', render));
+[search, selArea, selTipo, onlyValid, onlyExpired].forEach(el => el.addEventListener('input', render));
 btnFavoritos.addEventListener('click', () => {
   showOnlyFavs = !showOnlyFavs;
   btnFavoritos.textContent = showOnlyFavs ? 'Todos' : 'Favoritos';
   render();
 });
 
+// ================== Boot ==================
 async function boot() {
   try {
     const res = await fetch(DATA_URL, {
       method: 'GET',
-      credentials: 'include', // usa cookies do SIGO
-      headers: { 'X-Requested-With': 'XMLHttpRequest' },
+      headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      // no SIGO: credentials:'include'
     });
     if (!res.ok) throw new Error('Falha ao buscar documentos');
     const raw = await res.json();
@@ -171,7 +216,7 @@ async function boot() {
     buildFilters(ALL);
     render();
   } catch (e) {
-    console.error('Erro carregando documentos do SIGO:', e);
+    console.error('Erro carregando documentos:', e);
   }
 }
 
@@ -186,6 +231,14 @@ function adaptSigoRecord(raw) {
     versao: raw.versao || raw.Versao || '-',
     criacao: raw.criacao || raw.Criacao,
     publicacao: raw.publicacao || raw.Publicacao,
+
+    // aceita várias nomenclaturas vindas do SIGO
+    validade:
+      raw.validade || raw.Validade ||
+      raw.vencimento || raw.Vencimento ||
+      raw.expiraEm || raw.ExpiraEm ||
+      raw.dataVencimento || raw.DataVencimento || null,
+
     favorito: !!raw.favorito,
     urlViewer: raw.urlViewer || raw.viewer || null,
     url: raw.url || raw.Url || '#',
@@ -195,3 +248,4 @@ function adaptSigoRecord(raw) {
 }
 
 boot();
+

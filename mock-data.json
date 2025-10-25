@@ -7,7 +7,8 @@
     "area": "CQP",
     "status": "Válido",
     "versao": "04",
-    "url": "https://exemplo.com/docs/IT.BIZA.CQP.018-04.docx",
+    "validade": "2025-09-15",
+    "url": "https://example.com/docs/IT.BIZA.CQP.018-04.docx",
     "extensao": "docx"
   },
   {
@@ -18,7 +19,8 @@
     "area": "PCP",
     "status": "Válido",
     "versao": "10",
-    "url": "https://exemplo.com/docs/MP.BIZA.PCP.005-10.docx",
+    "validade": "2025-11-10",
+    "url": "https://example.com/docs/MP.BIZA.PCP.005-10.docx",
     "extensao": "docx"
   },
   {
@@ -29,7 +31,8 @@
     "area": "GRE",
     "status": "Válido",
     "versao": "02",
-    "url": "https://exemplo.com/docs/FOR.BIZA.GRE.004.pdf",
+    "validade": "2026-01-15",
+    "url": "https://example.com/docs/FOR.BIZA.GRE.004.pdf",
     "extensao": "pdf"
   }
 ]
