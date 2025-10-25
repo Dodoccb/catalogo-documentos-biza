@@ -1,0 +1,35 @@
+[
+  {
+    "id": "1",
+    "nome": "IT.BIZA.CQP.018-04 - Análise de Garantia",
+    "codigo": "IT.BIZA.CQP.018-04",
+    "tipo": "Instrução de Trabalho",
+    "area": "CQP",
+    "status": "Válido",
+    "versao": "04",
+    "url": "https://exemplo.com/docs/IT.BIZA.CQP.018-04.docx",
+    "extensao": "docx"
+  },
+  {
+    "id": "2",
+    "nome": "MP.BIZA.PCP.005-10 - Planejamento de Produção",
+    "codigo": "MP.BIZA.PCP.005-10",
+    "tipo": "Mapa de Processo",
+    "area": "PCP",
+    "status": "Válido",
+    "versao": "10",
+    "url": "https://exemplo.com/docs/MP.BIZA.PCP.005-10.docx",
+    "extensao": "docx"
+  },
+  {
+    "id": "3",
+    "nome": "FOR.BIZA.GRE.004 - Controle de Resíduos",
+    "codigo": "FOR.BIZA.GRE.004",
+    "tipo": "Formulário",
+    "area": "GRE",
+    "status": "Válido",
+    "versao": "02",
+    "url": "https://exemplo.com/docs/FOR.BIZA.GRE.004.pdf",
+    "extensao": "pdf"
+  }
+]

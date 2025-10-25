@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Catálogo de Documentos – BIZA | SGI</title>
+
+  <!-- CSS externo -->
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- Ícone opcional -->
+  <link rel="icon" href="data:," />
+</head>
+
+<body>
+  <!-- Cabeçalho -->
+  <header>
+    <div class="bar">
+      <div class="brand">
+        <div class="logo">B</div>
+        <div class="title">
+          <b>Catálogo de Documentos – BIZA</b>
+          <span>Layout otimizado para tablet (paisagem)</span>
+        </div>
+      </div>
+
+      <div class="control">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+             xmlns="http://www.w3.org/2000/svg">
+          <path d="M21 21l-4.3-4.3" stroke="#9aa3b2" stroke-width="2" stroke-linecap="round" />
+          <circle cx="10.5" cy="10.5" r="7.5" stroke="#9aa3b2" stroke-width="2" />
+        </svg>
+        <input id="search" type="search" placeholder="Pesquisar por nome, código, área..." />
+      </div>
+
+      <div class="controls">
+        <div class="control">
+          <label for="filterArea" style="color:var(--muted); font-size:12px">Área</label>
+          <select id="filterArea"></select>
+        </div>
+
+        <div class="control">
+          <label for="filterTipo" style="color:var(--muted); font-size:12px">Tipo</label>
+          <select id="filterTipo"></select>
+        </div>
+
+        <button class="btn" id="btnFavoritos">Favoritos</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Conteúdo principal -->
+  <main>
+    <div class="filters">
+      <label class="chip">
+        <input type="checkbox" id="onlyValid"> Somente válidos
+      </label>
+      <label class="chip">
+        <input type="checkbox" id="onlyAtual"> Mostrar versão mais recente
+      </label>
+      <span class="chip" id="total">Total: 0</span>
+    </div>
+
+    <section class="grid" id="grid"></section>
+  </main>
+
+  <!-- Rodapé -->
+  <footer>
+    SGI BIZA • Este catálogo consulta os documentos publicados no SIGO.  
+    Use sempre a versão válida.
+  </footer>
+
+  <!-- Modal Viewer -->
+  <div class="viewer" id="viewer">
+    <div class="frame">
+      <header>
+        <div class="bar">
+          <div style="display:flex; gap:8px; align-items:center">
+            <strong id="viewerTitle">Visualizador</strong>
+          </div>
+          <button class="close" id="closeViewer">Fechar</button>
+        </div>
+      </header>
+      <iframe id="viewerFrame" allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <!-- Script principal -->
+  <script src="app.js"></script>
+</body>
+</html>
+

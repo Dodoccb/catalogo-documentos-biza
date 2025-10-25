@@ -1,0 +1,152 @@
+/* ======= Tema BIZA/GHT (escuro, alto contraste) ======= */
+:root {
+  --ght-orange: #F8AD1E;
+  --ght-blue:   #0F2A4A;
+  --bg:         #0C0C0C;
+  --panel:      #171717;
+  --text:       #FFFFFF;
+  --muted:      #B8BDC7;
+  --ok:         #16a34a;
+  --warn:       #f59e0b;
+  --bad:        #ef4444;
+  --chip:       #262626;
+  --chip-border:#2F2F2F;
+  --shadow:     0 10px 25px rgba(0,0,0,.35);
+}
+
+/* Base */
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, system-ui, Segoe UI, Roboto, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Header / Topbar */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: linear-gradient(180deg,#0d121a 0%, #0a0a0a 100%);
+  border-bottom: 1px solid #1E1E1E;
+  box-shadow: var(--shadow);
+}
+.bar {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 260px 1fr auto;
+  gap: 16px;
+  padding: 14px 18px;
+  align-items: center;
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand .logo {
+  width: 42px; height: 42px; border-radius: 50%;
+  border: 1px solid #2a2a2a; background: #101010;
+  display: grid; place-items: center;
+  font-weight: 800; color: var(--ght-orange);
+}
+.brand .title { line-height: 1.1; display: flex; flex-direction: column; }
+.brand .title b { font-size: 18px; }
+.brand .title span { font-size: 12px; color: var(--muted); }
+
+/* Controles superiores */
+.controls { display: flex; gap: 10px; align-items: center; justify-content: flex-end; flex-wrap: wrap; }
+.control {
+  background: #0f0f0f;
+  border: 1px solid #232323;
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: flex; gap: 8px; align-items: center;
+}
+.control input[type="search"],
+.control select {
+  background: transparent; border: none; outline: none;
+  color: var(--text); font-size: 14px; min-width: 220px;
+}
+
+/* Botões */
+.btn {
+  background: var(--ght-orange); color: #141414;
+  border: none; border-radius: 12px;
+  padding: 12px 14px; font-weight: 700;
+  box-shadow: var(--shadow); cursor: pointer;
+}
+.btn:active { transform: translateY(1px); }
+.btn-ghost {
+  background:#0f0f0f; color: var(--text);
+  border:1px solid #252525; border-radius:12px;
+  padding:10px 12px; cursor:pointer;
+}
+
+/* Main */
+main { max-width: 1400px; margin: 0 auto; padding: 18px; }
+
+/* Filtros/Chips */
+.filters { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.chip {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--chip); border: 1px solid var(--chip-border);
+  padding: 10px 12px; border-radius: 999px; font-size: 13px;
+}
+.chip input { transform: scale(1.2); }
+
+/* Cards em grade */
+.grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+@media (max-width: 1280px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 1024px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+
+.card {
+  background: var(--panel);
+  border: 1px solid #232323;
+  border-radius: 18px;
+  padding: 16px;
+  display: flex; flex-direction: column; gap: 12px;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+}
+.card h3 { margin: 0; font-size: 18px; line-height: 1.2; }
+.meta { display: flex; gap: 8px; flex-wrap: wrap; }
+.tag {
+  font-size: 12px; padding: 6px 10px;
+  border-radius: 999px; border: 1px solid #2c2c2c; background: #111;
+}
+.tag.area { border-color: #334155; }
+.tag.tipo { border-color: #3f3f46; }
+.row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.row .spacer { flex: 1; }
+.status { font-weight: 700; }
+.status.valido { color: var(--ok); }
+.status.rascunho { color: var(--warn); }
+.status.obsoleto { color: var(--bad); }
+
+/* Acessibilidade touch */
+input, select, button { min-height: 44px; }
+
+/* Modal Viewer */
+.viewer {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.85);
+  display: none; align-items: center; justify-content: center;
+  z-index: 50;
+}
+.viewer.open { display: flex; }
+.viewer .frame {
+  width: 92vw; height: 86vh;
+  border-radius: 16px; overflow: hidden;
+  background: #000; border: 1px solid #2a2a2a;
+}
+.viewer header {
+  position: relative; background: #0c0c0c; border-bottom: 1px solid #1f1f1f;
+}
+.viewer .bar { grid-template-columns: 1fr auto; }
+.viewer .close {
+  background:#111; color:#fff; border:1px solid #333;
+  border-radius: 10px; padding: 10px 12px; cursor: pointer;
+}
+.viewer iframe { width: 100%; height: calc(86vh - 68px); border: 0; }
