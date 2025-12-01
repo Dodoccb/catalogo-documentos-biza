@@ -1,0 +1,20 @@
+# Configuração para cPanel - Redirecionar todas as requisições para o servidor Node.js
+# Isso garante que o servidor Express processe todas as rotas
+
+RewriteEngine On
+
+# Não redirecionar arquivos estáticos que existem fisicamente
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Redirecionar todas as outras requisições para o servidor Node.js
+# O cPanel geralmente usa uma porta específica ou socket
+RewriteRule ^(.*)$ http://localhost:%{SERVER_PORT}/$1 [P,L]
+
+# Headers de segurança
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>
+

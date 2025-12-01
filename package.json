@@ -1,0 +1,20 @@
+{
+  "name": "biza-docs-proxy",
+  "type": "module",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "node-fetch": "^3.3.2"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "PORT=3100 node server.js",
+    "test-api": "node test-api.js",
+    "production": "NODE_ENV=production node server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}
+

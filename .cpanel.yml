@@ -1,0 +1,10 @@
+# Configuração para cPanel (opcional)
+# Alguns cPanels usam este arquivo para configuração automática
+
+deploy:
+  - name: "Catálogo de Documentos BIZA"
+    start_file: "start.js"
+    node_version: "18"
+    environment_variables:
+      - NODE_ENV=production
+

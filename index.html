@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Catálogo de Documentos – BIZA | SGI</title>
 
-  <!-- CSS externo -->
+  <!-- CSS externo, conforme pasta criada no SIGO: catalogo-documentos-biza-->
   <link rel="stylesheet" href="styles.css">
 
   <!-- Ícone opcional -->
@@ -14,40 +14,46 @@
 
 <body>
   <!-- Cabeçalho -->
-  <header>
-    <div class="bar">
-      <div class="brand">
-        <img class="brand-logo" src="logo-BIZAxGHT.png" alt="BIZA + GHT" />
-        <div class="title">
-          <b>Catálogo de Documentos – BIZA</b>
-          <span>Layout otimizado para tablet (paisagem)</span>
-        </div>
-      </div>
+ <header>
+  <!-- Linha 1: Logo + Título centralizados / Busca à direita -->
+  <div class="header-top">
+   
+  <!-- Caminho da imagem conforme pasta criada no SIGO: catalogo-documentos-biza-->
+    <div class="header-logo-title">
+      <img src="logo-BIZAxGHT.png" alt="BIZA + GHT" class="logo-header" />
 
-      <div class="control">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-             xmlns="http://www.w3.org/2000/svg">
-          <path d="M21 21l-4.3-4.3" stroke="#9aa3b2" stroke-width="2" stroke-linecap="round" />
-          <circle cx="10.5" cy="10.5" r="7.5" stroke="#9aa3b2" stroke-width="2" />
-        </svg>
-        <input id="search" type="search" placeholder="Pesquisar por nome, código, área..." />
-      </div>
-
-      <div class="controls">
-        <div class="control">
-          <label for="filterArea" style="color:var(--muted); font-size:12px">Área</label>
-          <select id="filterArea"></select>
-        </div>
-
-        <div class="control">
-          <label for="filterTipo" style="color:var(--muted); font-size:12px">Tipo</label>
-          <select id="filterTipo"></select>
-        </div>
-
-        <button class="btn" id="btnFavoritos">Favoritos</button>
+      <div class="header-title">
+        <h1>Catálogo de Documentos – BIZA</h1>
+        <p>Layout otimizado para tablet (paisagem)</p>
       </div>
     </div>
-  </header>
+
+    <!-- Barra de busca alinhada à direita -->
+    <div class="header-search">
+      <input id="search" type="text" placeholder="Pesquisar por nome, código, área" />
+    </div>
+
+  </div>
+
+  <!-- Linha 2: filtros e botão -->
+  <div class="controls">
+    
+    <div class="pill">
+      <label for="filterArea">Área</label>
+      <select id="filterArea"></select>
+    </div>
+
+    <div class="pill">
+      <label for="filterTipo">Tipo</label>
+      <select id="filterTipo"></select>
+    </div>
+
+    <button class="btn" id="btnFavoritos">Favoritos</button>
+    <button class="btn" id="btnAssistente">Assistente IA 🤖</button>
+    
+  </div>
+
+</header>
 
   <!-- Conteúdo principal -->
   <main>
@@ -85,8 +91,115 @@
     </div>
   </div>
 
-  <!-- Script principal -->
-  <script src="app.js"></script>
+  
+  <!-- Assistente SGI BIZA -->
+<script
+    src="https://embed.tess.im/assets/js/embed/chat-widget-v1.0.0-min.js"
+    data-agent-url="https://embed.tess.im/pt-BR/agents/especialista-sgi-aCmUYE/public"
+    data-embed-type="popup">
+</script>
+
+<script>
+    // Botão que chama o assistente
+    document.getElementById("btnAssistente").addEventListener("click", () => {
+        if (window.TessChat) {
+            window.TessChat.show();
+        } else {
+            alert("Assistente ainda está carregando...");
+        }
+    });
+</script>
+
+<!-- Balão de boas-vindas -->
+<div id="assistHint" class="assist-hint hidden">
+    🤖 <span>Sou o Assistente SGI BIZA! Posso te ajudar a encontrar qualquer documento.</span>
+</div>
+
+<!-- Ícone aumentado acima do botão da Tess -->
+<div id="assistBadge" class="assist-badge">🤖</div>
+
+<style>
+/* Balão de boas-vindas */
+.assist-hint {
+    position: fixed;
+    bottom: 140px; 
+    right: 40px;
+    background: #ffffff;
+    color: #000;
+    padding: 12px 18px;
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: 600;
+    max-width: 280px;
+    box-shadow: 0 2px 14px rgba(0,0,0,0.25);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all .6s ease;
+    z-index: 999999;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+.assist-hint.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+.assist-hint.hide {
+    opacity: 0;
+    transform: translateY(20px);
+}
+.hidden { display: block; opacity: 0; }
+
+/* Ícone aumentado com emoji por cima */
+.assist-badge {
+    position: fixed;
+    bottom: 60px;
+    right: 30px;
+    font-size: 20px;
+    background: #ffffffd8;
+    border-radius: 50%;
+    padding: 8px 12px;
+    z-index: 999999;
+    pointer-events: none;
+    animation: pulseBadge 2s infinite ease-in-out;
+}
+
+/* Animação do emoji */
+@keyframes pulseBadge {
+    0% { transform: scale(1); opacity: .9; }
+    50% { transform: scale(1.18); opacity: 1; }
+    100% { transform: scale(1); opacity: .9; }
+}
+
+/* Animação do botão oficial */
+.tess-widget-launcher {
+    transform: scale(1.25) !important;
+    animation: pulseBtn 2.5s infinite ease-in-out;
+}
+
+@keyframes pulseBtn {
+    0% { transform: scale(1.25); }
+    50% { transform: scale(1.35); }
+    100% { transform: scale(1.25); }
+}
+</style>
+
+<script>
+// SEMPRE mostrar o balão quando abrir o site
+setTimeout(() => {
+    const hint = document.getElementById("assistHint");
+    hint.classList.add("show");
+
+    // sumir depois de 7s
+    setTimeout(() => {
+        hint.classList.add("hide");
+    }, 7000);
+}, 1500);
+</script>
+
+<!-- Script principal, conforme pasta criada no SIGO: catalogo-documentos-biza -->
+<script src="app.js"></script>
+
 </body>
 </html>
 
